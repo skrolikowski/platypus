@@ -37,6 +37,8 @@ local ALLOWED_CONFIG_KEYS = {
 	allow_wall_jump = true,
 	const_wall_jump = true,
 	allow_double_jump = true,
+	allow_falling_double_jump = true,
+
 	allow_wall_slide = true,
 	wall_slide_gravity = true,
 	max_velocity = true,
@@ -100,6 +102,7 @@ function M.create(config)
 		wall_jump_power_ratio_y = config.wall_jump_power_ratio_y or 0.75,
 		wall_jump_power_ratio_x = config.wall_jump_power_ratio_x or 0.35,
 		allow_double_jump = config.allow_double_jump or false,
+		allow_falling_double_jump = config.allow_falling_double_jump or false,
 		allow_wall_jump = config.allow_wall_jump or false,
 		const_wall_jump = config.const_wall_jump or false,
 		allow_wall_slide = config.allow_wall_slide or false,
@@ -271,7 +274,7 @@ function M.create(config)
 			platypus.velocity.y = power * platypus.wall_jump_power_ratio_y
 			platypus.velocity.x = state.wall_contact * power * platypus.wall_jump_power_ratio_x
 			msg.post("#", M.WALL_JUMP)
-		elseif platypus.allow_double_jump and jumping_up() and not state.double_jumping then
+		elseif platypus.allow_double_jump and (platypus.allow_falling_double_jump or jumping_up()) and not state.double_jumping then
 			platypus.velocity.y = platypus.velocity.y + power
 			state.double_jumping = true
 			msg.post("#", M.DOUBLE_JUMP)
